@@ -16,6 +16,8 @@ export class ViewAllEmployeeComponent {
 
   public employeeList: any;
 
+  
+
   constructor(private http: HttpClient) {
     this.loadEmployeeTable();
   }
@@ -29,7 +31,7 @@ export class ViewAllEmployeeComponent {
     )
   }
 
-  deleteEmployee(emplyee: any) {
+  deleteEmployee(employee: any) {
 
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
@@ -48,7 +50,7 @@ export class ViewAllEmployeeComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`http://localhost:8080/emp-controller/delete-emp/${emplyee.id}`, { responseType: 'text' }).subscribe(res => {
+        this.http.delete(`http://localhost:8080/emp-controller/delete-emp/${employee.id}`, { responseType: 'text' }).subscribe(res => {
           this.loadEmployeeTable();
           swalWithBootstrapButtons.fire({
             title: "Deleted!",
@@ -71,4 +73,45 @@ export class ViewAllEmployeeComponent {
     });
     
   }
+
+  public selectedEmployee:any={
+    "id":null,
+    "firstName":null,
+    "lastName":null,
+    "email":null,
+    "departmentId":null,
+    "roleId":null
+  };
+
+  updateEmployee(employee:any){
+    
+    if(employee!=null){
+      this.selectedEmployee=employee;
+    }
+    
+    console.log(employee);
+  }
+
+  saveUpdateEmployee(){
+
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire("Saved!", "", "success");
+        this.http.put("http://localhost:8080/emp-controller/update-employee", this.selectedEmployee).subscribe(res=>{
+          console.log("update!")
+      })
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+    
+  }
+
 }
